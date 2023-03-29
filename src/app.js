@@ -1,11 +1,13 @@
 import express from "express";
+import dataBase from "./config/dbConnect.js";
+import livros from "./models/Livro.js";
+
+dataBase.on("Error", console.log.bind(console, "Erro de conexão"))
+dataBase.once("open", () => {
+    console.log("A conexão com o banco foi feita com sucesso")
+})
 
 const app = express();
-
-const livros = [
-    {id:1, "titulo": "Senhor dos Aneis"},
-    {id:2, "titulo": "O Hobiit"}
-]
 
 function buscaLivro(id) {
     return livros.findIndex(livro => livro.id == id)
@@ -18,7 +20,9 @@ app.get('/',(req,res) => {
 })
 
 app.get('/livros',(req,res) => {
-    res.status(200).json(livros)
+    livros.find((err,livros) => {
+        res.status(200).json(livros);
+    })
 })
 
 app.get('/livros/:id', (req,res) => {
